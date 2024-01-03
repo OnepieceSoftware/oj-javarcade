@@ -49,7 +49,7 @@ public class Main extends Application {
         StackPane pane = new StackPane(gameBox);
         Scene scene = new Scene(pane, 500, 530);
 
-        new Label("L");
+        new Label("L1");
 
         stage.setTitle("Bomb!");
         stage.setScene(scene);
