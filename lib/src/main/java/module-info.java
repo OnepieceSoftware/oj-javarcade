@@ -1,3 +1,4 @@
+// @Publish(false)
 module org.example.lib {
     requires transitive com.fasterxml.jackson.databind;
     requires com.google.common;
