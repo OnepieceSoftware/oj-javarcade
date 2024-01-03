@@ -30,7 +30,7 @@ jobs:
           distribution: temurin
           java-version-file: .oj/jdk-version.txt
       - uses: gradle/gradle-build-action@v2.7.1
-      - run: "./oj :${{ matrix.module }}:testFunctional"
+      - run: "./oj :${{ matrix.module }}:checkFunctional"
         env:
           BUILD_CACHE_USER: ${{ secrets.BUILD_CACHE_USER }}
           BUILD_CACHE_PWD: ${{ secrets.BUILD_CACHE_PWD }}
