@@ -14,9 +14,9 @@ class MainTest {
 
     @Test
     void testApp() throws IOException {
-        assertEquals("org.example.lib", Lib.class.getModule().getName());
-        assertEquals("org.example.app", Main.class.getModule().getName());
-        assertEquals("org.example.app", MainTest.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.lib", Lib.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.app", Main.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.app", MainTest.class.getModule().getName());
         try (InputStream is = MainTest.class.getResourceAsStream("/data.txt")) {
             assertNotNull(is);
             assertEquals("ABC", new String(is.readAllBytes(), UTF_8));

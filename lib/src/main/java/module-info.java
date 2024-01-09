@@ -1,5 +1,5 @@
 // @Publish(false)
-module org.example.lib {
+module software.onepiece.javarcade.lib {
     requires transitive com.fasterxml.jackson.databind;
     requires com.google.common;
     requires java.logging; // JDK module

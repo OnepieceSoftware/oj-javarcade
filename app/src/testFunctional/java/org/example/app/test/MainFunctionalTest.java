@@ -14,8 +14,8 @@ public class MainFunctionalTest {
 
     @Test
     void testAppFunctional() throws IOException {
-        assertEquals("org.example.app", Main.class.getModule().getName());
-        assertEquals("org.example.app.test.functional", MainFunctionalTest.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.app", Main.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.app.test.functional", MainFunctionalTest.class.getModule().getName());
         try (InputStream is = MainFunctionalTest.class.getResourceAsStream("/data.txt")) {
             assertNotNull(is);
             assertEquals("DEF", new String(is.readAllBytes(), UTF_8));

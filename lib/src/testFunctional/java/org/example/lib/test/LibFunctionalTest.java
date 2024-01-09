@@ -14,8 +14,8 @@ class LibFunctionalTest {
 
     @Test
     void testLibFunctional() throws IOException {
-        assertEquals("org.example.lib", Lib.class.getModule().getName());
-        assertEquals("org.example.lib.test.functional", LibFunctionalTest.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.lib", Lib.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.lib.test.functional", LibFunctionalTest.class.getModule().getName());
         try (InputStream is = LibFunctionalTest.class.getResourceAsStream("/data.txt")) {
             assertNotNull(is);
             assertEquals("42", new String(is.readAllBytes(), UTF_8));
