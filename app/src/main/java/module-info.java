@@ -13,12 +13,16 @@ module software.onepiece.javarcade.app {
 
     requires /*runtime*/ software.onepiece.javarcade.character.bigs;
     requires /*runtime*/ software.onepiece.javarcade.character.wedge;
+    requires /*runtime*/ software.onepiece.javarcade.inhabitant.floor;
+    requires /*runtime*/ software.onepiece.javarcade.level.classic;
 
     requires /*runtime*/ io.netty.transport.epoll.linux.aarch_64;
     requires /*runtime*/ io.netty.transport.epoll.linux.x86_64;
     requires /*runtime*/ org.slf4j.simple;
 
     uses software.onepiece.javarcade.model.Character;
+    uses software.onepiece.javarcade.model.Inhabitant;
+    uses software.onepiece.javarcade.model.Level;
 
     exports software.onepiece.javarcade.bomb to
             javafx.base,

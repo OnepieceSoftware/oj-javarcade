@@ -2,6 +2,7 @@ package software.onepiece.javarcade.bomb;
 
 import com.fasterxml.jackson.jakarta.rs.json.annotation.JSONP;
 import jakarta.activation.CommandObject;
+import jakarta.activation.DataHandler;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -15,14 +16,18 @@ import org.apache.commons.configuration2.Configuration;
 import org.example.lib.Lib;
 import org.slf4j.LoggerFactory;
 import software.onepiece.javarcade.model.Character;
-import software.onepiece.javarcade.model.SpritePosition;
+import software.onepiece.javarcade.model.Inhabitant;
+import software.onepiece.javarcade.model.Level;
+import software.onepiece.javarcade.model.Spot;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import static software.onepiece.javarcade.model.SpritePosition.MATRIX_HEIGHT;
-import static software.onepiece.javarcade.model.SpritePosition.MATRIX_WIDTH;
+import static java.util.Objects.requireNonNull;
+import static software.onepiece.javarcade.model.Spot.MATRIX_HEIGHT;
+import static software.onepiece.javarcade.model.Spot.MATRIX_WIDTH;
 
 public class Main extends Application {
     // Services:
@@ -33,16 +38,7 @@ public class Main extends Application {
     // - Item
     // - Level
 
-
-    @JSONP
-    @Deprecated
-    public static void doWork() {
-        CommandObject o = null;
-        new Lib();
-    }
-
     public static void main(String[] args) {
-        Configuration conf = new CombinedConfiguration();
         LoggerFactory.getLogger(Main.class).info("App running...");
         System.out.println("Module Name: " + Main.class.getModule().getName());
         doWork();
@@ -67,17 +63,21 @@ public class Main extends Application {
         GraphicsContext ctx = canvas.getGraphicsContext2D();
         ctx.setImageSmoothing(false);
 
-        Image leftWall = new Image(getClass().getResourceAsStream("/wall_left.png"), CELL_WIDTH, CELL_HEIGHT, true, false);
-        Image rightWall = new Image(getClass().getResourceAsStream("/wall_right.png"), CELL_WIDTH, CELL_HEIGHT, true, false);
+        Image leftWall = new Image(requireNonNull(getClass().getResourceAsStream("/wall_left.png")), CELL_WIDTH, CELL_HEIGHT, true, false);
+        Image rightWall = new Image(requireNonNull(getClass().getResourceAsStream("/wall_right.png")), CELL_WIDTH, CELL_HEIGHT, true, false);
         for (int y = 0; y < MATRIX_HEIGHT; y++) {
             drawSprite(leftWall, 0, y, ctx);
             drawSprite(rightWall, 1 + MATRIX_WIDTH, y, ctx);
         }
 
         ServiceLoader.load(Character.class).forEach(c -> {
-            SpritePosition pos = characterStartPositions.removeFirst();
-            drawSprite(new Image(c.getImage(), CELL_WIDTH, CELL_HEIGHT, true, false), 1 + pos.getX(), pos.getY(), ctx);
-        } );
+            Spot spot = characterStartPositions.removeFirst();
+            drawSprite(imageFor(c.getImage()), 1 + spot.getX(), spot.getY(), ctx);
+        });
+
+        ServiceLoader.load(Level.class).forEach(level -> {
+            level.render().forEach(spot -> drawSprite(imageFor(inhabitantForRef(spot).getImage()), 1 + spot.getX(), spot.getY(), ctx));
+        });
 
         StackPane pane = new StackPane(canvas);
         Scene scene = new Scene(pane, WIDTH, HEIGHT);
@@ -89,15 +89,46 @@ public class Main extends Application {
         stage.setResizable(false);
     }
 
+    private Image imageFor(InputStream stream) {
+        if (stream == null) {
+            return null;
+        }
+        return new Image(stream, CELL_WIDTH, CELL_HEIGHT, true, false);
+    }
+
+    private Inhabitant inhabitantForRef(Spot spot) {
+        return ServiceLoader.load(Inhabitant.class).stream().map(ServiceLoader.Provider::get).filter(i ->
+                        i.getRef() == spot.getInhabitantRef()
+                ).findFirst().orElse(Inhabitant.EMPTY);
+    }
+
     private void drawSprite(Image img, int x, int y, GraphicsContext ctx) {
+        if (img == null) {
+            return;
+        }
         ctx.drawImage(img, x * CELL_WIDTH * SCALE, y * CELL_HEIGHT * SCALE, CELL_WIDTH * SCALE, CELL_HEIGHT * SCALE);
     }
 
-    private final List<SpritePosition> characterStartPositions = new ArrayList<>(List.of(
-            new SpritePosition(0, 0),
-            new SpritePosition(MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1),
-            new SpritePosition(0, MATRIX_HEIGHT - 1),
-            new SpritePosition(MATRIX_WIDTH - 1, 0)
+    private final List<Spot> characterStartPositions = new ArrayList<>(List.of(
+            new Spot(' ', 0, 0),
+            new Spot(' ', MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1),
+            new Spot(' ', 0, MATRIX_HEIGHT - 1),
+            new Spot(' ', MATRIX_WIDTH - 1, 0)
     ));
 
+
+    @JSONP
+    @Deprecated
+    public static void doWork() {
+        Configuration conf = new CombinedConfiguration();
+        CommandObject o = new CommandObject() {
+            @Override
+            public void setCommandContext(String s, DataHandler dataHandler) {
+            }
+        };
+        if (o.toString().equals(conf.toString())) {
+            return;
+        }
+        new Lib();
+    }
 }
