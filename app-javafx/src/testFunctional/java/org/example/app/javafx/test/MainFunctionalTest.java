@@ -1,4 +1,4 @@
-package org.example.app.test;
+package org.example.app.javafx.test;
 
 import org.junit.jupiter.api.Test;
 import software.onepiece.javarcade.javafx.Main;
@@ -14,8 +14,8 @@ public class MainFunctionalTest {
 
     @Test
     void testAppFunctional() throws IOException {
-        assertEquals("software.onepiece.javarcade.app", Main.class.getModule().getName());
-        assertEquals("software.onepiece.javarcade.app.test.functional", MainFunctionalTest.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.app.javafx", Main.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.app.javafx.test.functional", MainFunctionalTest.class.getModule().getName());
         try (InputStream is = MainFunctionalTest.class.getResourceAsStream("/data.txt")) {
             assertNotNull(is);
             assertEquals("DEF", new String(is.readAllBytes(), UTF_8));
