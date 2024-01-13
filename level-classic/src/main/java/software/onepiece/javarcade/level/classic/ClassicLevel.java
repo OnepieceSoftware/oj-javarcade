@@ -6,7 +6,7 @@ public class ClassicLevel extends Level {
     @Override
     protected String define() {
         return """
-                ..............
+                W.............
                 .xx.xxxxxx.xx.
                 .x..........x.
                 .x.xxxxxxxx.x.
@@ -19,7 +19,7 @@ public class ClassicLevel extends Level {
                 .x.xxxxxxxx.x.
                 .x..........x.
                 .xx.xxxxxx.xx.
-                ..............
+                .............B
                 """;
     }
 }

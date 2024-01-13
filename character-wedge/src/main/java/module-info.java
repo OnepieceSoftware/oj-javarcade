@@ -3,6 +3,6 @@ module software.onepiece.javarcade.character.wedge {
 
     exports software.onepiece.javarcade.character.wedge;
 
-    provides software.onepiece.javarcade.model.Character
+    provides software.onepiece.javarcade.model.Inhabitant
             with software.onepiece.javarcade.character.wedge.Wedge;
 }

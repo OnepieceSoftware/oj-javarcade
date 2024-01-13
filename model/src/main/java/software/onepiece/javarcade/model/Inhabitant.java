@@ -19,4 +19,11 @@ public interface Inhabitant {
 
     InputStream getImage();
 
+    default boolean controllable() {
+        return false;
+    }
+
+    default boolean blocks() {
+        return false;
+    }
 }

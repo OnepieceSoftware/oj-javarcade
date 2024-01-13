@@ -1,5 +1,8 @@
 package software.onepiece.javarcade.model;
 
+import java.util.List;
+import java.util.Map;
+
 public class Spot {
     public static final int MATRIX_WIDTH = 14;
     public static final int MATRIX_HEIGHT = 14;
@@ -33,35 +36,43 @@ public class Spot {
         return y;
     }
 
-    public Spot moveRight() {
+    public void moveRight(List<Spot> state, Map<Character, Inhabitant> inhabitants) {
+        if (state.stream().anyMatch(s -> s.getX() == x + 1 && s.getY() == y && inhabitants.get(s.getInhabitantRef()).blocks())) {
+            return;
+        }
         x++;
         if (x >= MATRIX_WIDTH) {
             x = MATRIX_WIDTH - 1;
         }
-        return this;
     }
 
-    public Spot moveLeft() {
+    public void moveLeft(List<Spot> state, Map<Character, Inhabitant> inhabitants) {
+        if (state.stream().anyMatch(s -> s.getX() == x - 1 && s.getY() == y && inhabitants.get(s.getInhabitantRef()).blocks())) {
+            return;
+        }
         x--;
         if (x < 0) {
             x = 0;
         }
-        return this;
     }
 
-    public Spot moveDown() {
+    public void moveDown(List<Spot> state, Map<Character, Inhabitant> inhabitants) {
+        if (state.stream().anyMatch(s -> s.getX() == x && s.getY() == y + 1 && inhabitants.get(s.getInhabitantRef()).blocks())) {
+            return;
+        }
         y++;
         if (y >= MATRIX_HEIGHT) {
             y = MATRIX_HEIGHT - 1;
         }
-        return this;
     }
 
-    public Spot moveUp() {
+    public void moveUp(List<Spot> state, Map<Character, Inhabitant> inhabitants) {
+        if (state.stream().anyMatch(s -> s.getX() == x && s.getY() == y - 1 && inhabitants.get(s.getInhabitantRef()).blocks())) {
+            return;
+        }
         y--;
         if (y < 0) {
             y = 0;
         }
-        return this;
     }
 }

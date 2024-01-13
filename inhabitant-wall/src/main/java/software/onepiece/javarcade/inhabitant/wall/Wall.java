@@ -1,22 +1,22 @@
-package software.onepiece.javarcade.character.wedge;
+package software.onepiece.javarcade.inhabitant.wall;
 
 import software.onepiece.javarcade.model.Inhabitant;
 
 import java.io.InputStream;
 
-public class Wedge implements Inhabitant {
+public class Wall implements Inhabitant {
     @Override
     public char getRef() {
-        return 'W';
+        return 'x';
     }
 
     @Override
     public InputStream getImage() {
-        return getClass().getResourceAsStream("assets/wedge.png");
+        return getClass().getResourceAsStream("assets/wall.png");
     }
 
     @Override
-    public boolean controllable() {
+    public boolean blocks() {
         return true;
     }
 }

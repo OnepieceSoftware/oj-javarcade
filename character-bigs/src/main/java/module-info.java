@@ -3,6 +3,6 @@ module software.onepiece.javarcade.character.bigs {
 
     exports software.onepiece.javarcade.character.bigs;
 
-    provides software.onepiece.javarcade.model.Character
+    provides software.onepiece.javarcade.model.Inhabitant
             with software.onepiece.javarcade.character.bigs.Bigs;
 }

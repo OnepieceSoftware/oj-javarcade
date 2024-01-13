@@ -15,14 +15,16 @@ import org.apache.commons.configuration2.CombinedConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.example.lib.Lib;
 import org.slf4j.LoggerFactory;
-import software.onepiece.javarcade.model.Character;
 import software.onepiece.javarcade.model.Inhabitant;
 import software.onepiece.javarcade.model.Level;
 import software.onepiece.javarcade.model.Spot;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import static java.util.Objects.requireNonNull;
@@ -57,36 +59,64 @@ public class Main extends Application {
     private static final int WIDTH = SCALE * (GAME_WIDTH + CELL_WIDTH * 2);
     private static final int HEIGHT = SCALE * GAME_HEIGHT;
 
+    private final Map<Character, Inhabitant> inhabitants = new LinkedHashMap<>();
+    private final List<Spot> state = new LinkedList<>();
+    private Spot player;
+
     @Override
     public void start(Stage stage) {
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext ctx = canvas.getGraphicsContext2D();
         ctx.setImageSmoothing(false);
 
-        Image leftWall = new Image(requireNonNull(getClass().getResourceAsStream("/wall_left.png")), CELL_WIDTH, CELL_HEIGHT, true, false);
-        Image rightWall = new Image(requireNonNull(getClass().getResourceAsStream("/wall_right.png")), CELL_WIDTH, CELL_HEIGHT, true, false);
-        for (int y = 0; y < MATRIX_HEIGHT; y++) {
-            drawSprite(leftWall, 0, y, ctx);
-            drawSprite(rightWall, 1 + MATRIX_WIDTH, y, ctx);
-        }
+        ServiceLoader.load(Inhabitant.class).forEach(inhabitant -> inhabitants.put(inhabitant.getRef(), inhabitant));
+        ServiceLoader.load(Level.class).forEach(level -> level.render().forEach(spot -> {
+            Inhabitant inhabitant = inhabitants.get(spot.getInhabitantRef());
+            images.put(spot.getInhabitantRef(), imageFor(inhabitant.getImage()));
+            if (inhabitant.controllable()) {
+                player = spot;
+                state.addLast(spot);
+            } else {
+                state.addFirst(spot);
+            }
+        }));
 
-        ServiceLoader.load(Character.class).forEach(c -> {
-            Spot spot = characterStartPositions.removeFirst();
-            drawSprite(imageFor(c.getImage()), 1 + spot.getX(), spot.getY(), ctx);
-        });
-
-        ServiceLoader.load(Level.class).forEach(level -> {
-            level.render().forEach(spot -> drawSprite(imageFor(inhabitantForRef(spot).getImage()), 1 + spot.getX(), spot.getY(), ctx));
-        });
+        draw(ctx);
 
         StackPane pane = new StackPane(canvas);
         Scene scene = new Scene(pane, WIDTH, HEIGHT);
+
+        scene.setOnKeyPressed(e -> {
+            switch (e.getCode()) {
+                case UP  -> player.moveUp(state, inhabitants);
+                case DOWN  -> player.moveDown(state, inhabitants);
+                case LEFT  -> player.moveLeft(state, inhabitants);
+                case RIGHT -> player.moveRight(state, inhabitants);
+                case X -> System.out.println("Boom!");
+            }
+            draw(ctx);
+        });
 
         new Label("L1");
         stage.setTitle("JavArcade");
         stage.setScene(scene);
         stage.show();
         stage.setResizable(false);
+    }
+
+
+    private final Image leftWall = new Image(requireNonNull(getClass().getResourceAsStream("/wall_left.png")), CELL_WIDTH, CELL_HEIGHT, true, false);
+    private final Image rightWall = new Image(requireNonNull(getClass().getResourceAsStream("/wall_right.png")), CELL_WIDTH, CELL_HEIGHT, true, false);
+    private final Map<Character, Image> images = new HashMap<>();
+
+    private void draw(GraphicsContext ctx) {
+        ctx.clearRect(CELL_WIDTH * SCALE, 0, WIDTH, HEIGHT);
+
+        for (int y = 0; y < MATRIX_HEIGHT; y++) {
+            drawSprite(leftWall, 0, y, ctx);
+            drawSprite(rightWall, 1 + MATRIX_WIDTH, y, ctx);
+        }
+        state.forEach(s -> drawSprite(images.get(s.getInhabitantRef()), s.getX() + 1, s.getY(), ctx));
     }
 
     private Image imageFor(InputStream stream) {
@@ -96,12 +126,6 @@ public class Main extends Application {
         return new Image(stream, CELL_WIDTH, CELL_HEIGHT, true, false);
     }
 
-    private Inhabitant inhabitantForRef(Spot spot) {
-        return ServiceLoader.load(Inhabitant.class).stream().map(ServiceLoader.Provider::get).filter(i ->
-                        i.getRef() == spot.getInhabitantRef()
-                ).findFirst().orElse(Inhabitant.EMPTY);
-    }
-
     private void drawSprite(Image img, int x, int y, GraphicsContext ctx) {
         if (img == null) {
             return;
@@ -109,23 +133,11 @@ public class Main extends Application {
         ctx.drawImage(img, x * CELL_WIDTH * SCALE, y * CELL_HEIGHT * SCALE, CELL_WIDTH * SCALE, CELL_HEIGHT * SCALE);
     }
 
-    private final List<Spot> characterStartPositions = new ArrayList<>(List.of(
-            new Spot(' ', 0, 0),
-            new Spot(' ', MATRIX_WIDTH - 1, MATRIX_HEIGHT - 1),
-            new Spot(' ', 0, MATRIX_HEIGHT - 1),
-            new Spot(' ', MATRIX_WIDTH - 1, 0)
-    ));
-
-
     @JSONP
     @Deprecated
     public static void doWork() {
         Configuration conf = new CombinedConfiguration();
-        CommandObject o = new CommandObject() {
-            @Override
-            public void setCommandContext(String s, DataHandler dataHandler) {
-            }
-        };
+        CommandObject o = (s, dataHandler) -> { };
         if (o.toString().equals(conf.toString())) {
             return;
         }

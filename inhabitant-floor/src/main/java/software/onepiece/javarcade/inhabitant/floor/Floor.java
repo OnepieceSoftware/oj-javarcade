@@ -7,7 +7,7 @@ import java.io.InputStream;
 public class Floor implements Inhabitant {
     @Override
     public char getRef() {
-        return 'x';
+        return '.';
     }
 
     @Override
