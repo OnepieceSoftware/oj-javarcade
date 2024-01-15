@@ -1,7 +1,7 @@
 package software.onepiece.javarcade.javafx;
 
-import org.example.lib.Lib;
 import org.junit.jupiter.api.Test;
+import software.onepiece.javarcade.model.Spot;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ class MainTest {
 
     @Test
     void testApp() throws IOException {
-        assertEquals("software.onepiece.javarcade.lib", Lib.class.getModule().getName());
+        assertEquals("software.onepiece.javarcade.model", Spot.class.getModule().getName());
         assertEquals("software.onepiece.javarcade.app.javafx", Main.class.getModule().getName());
         assertEquals("software.onepiece.javarcade.app.javafx", MainTest.class.getModule().getName());
         try (InputStream is = MainTest.class.getResourceAsStream("/data.txt")) {

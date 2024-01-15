@@ -1,4 +1,4 @@
-package software.onepiece.javarcade.engine;
+package software.onepiece.javarcade.logic;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,16 +18,16 @@ public class GameLoop {
 
     private void update() {
         if (gameState.isUp()) {
-            gameState.getPlayer().moveUp(gameState.state, gameState.inhabitants);
+            gameState.getPlayer().moveUp(gameState.getSpots(), gameState.getInhabitants());
         }
         if (gameState.isDown()) {
-            gameState.getPlayer().moveDown(gameState.state, gameState.inhabitants);
+            gameState.getPlayer().moveDown(gameState.getSpots(), gameState.getInhabitants());
         }
         if (gameState.isLeft()) {
-            gameState.getPlayer().moveLeft(gameState.state, gameState.inhabitants);
+            gameState.getPlayer().moveLeft(gameState.getSpots(), gameState.getInhabitants());
         }
         if (gameState.isRight()) {
-            gameState.getPlayer().moveRight(gameState.state, gameState.inhabitants);
+            gameState.getPlayer().moveRight(gameState.getSpots(), gameState.getInhabitants());
         }
     }
 
