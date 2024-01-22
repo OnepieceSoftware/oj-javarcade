@@ -4,9 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@Import(Application.Config.class)
-@SpringBootApplication()
+@Import(WebSocketConfig.class)
+@SpringBootApplication
 public class Application {
 
     public static void main(String[] args) {
@@ -15,10 +16,10 @@ public class Application {
     }
 
     // Component scanning does not work after 'jpackage' (why?)
-    public static class Config {
-        @Bean
-        public AppServlet appServlet(){
-            return new AppServlet();
-        }
-    }
+    // public static class Config {
+    //     @Bean
+    //     public AppServlet appServlet(){
+    //         return new AppServlet();
+    //     }
+    // }
 }
